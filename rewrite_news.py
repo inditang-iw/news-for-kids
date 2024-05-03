@@ -5,7 +5,8 @@ from headline import Headline
 
 class NewsRewriter:
     """
-    This module provides functionality to rewrite news articles in a format suitable for kids aged 11-14 to read in 5 minutes.
+    This module provides functionality to rewrite news articles in a format suitable for kids aged
+    11-14 to read in 5 minutes.
     """
 
     def __init__(self, api_key, section):
@@ -48,7 +49,8 @@ class NewsRewriter:
         """
         article_text = self.get_article_text()
         role_prompt = "You are a school teacher"
-        rewrite_prompt = "Rewrite the following article in a format suitable for kids aged 11-14 to read in 5 minutes: " + article_text
+        rewrite_prompt = "Rewrite the following article in a format suitable for kids " + \
+                         "aged 11-14 to read in 5 minutes: " + article_text
 
         client = OpenAI(
             organization='org-6nwmJPLFhoVcsTHUI4tUAAGE',
