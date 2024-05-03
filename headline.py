@@ -40,6 +40,15 @@ class Headline:
             str: The web URL of the article.
         """
         return self.json_article_content['response']['content']['webUrl']
+    
+    def get_article_web_title(self):
+        """
+        Returns the web title of the article.
+
+        Returns:
+            str: The web title of the article.
+        """
+        return self.json_article_content['response']['content']['webTitle']
 
     def get_article_text(self):
         """

@@ -2,6 +2,7 @@
 
 from openai import OpenAI
 from headline import Headline
+from medium import publish_to_medium
 
 class NewsRewriter:
     """
@@ -21,6 +22,15 @@ class NewsRewriter:
             None
         """
         self.headline = Headline(api_key=api_key, section=section)
+
+    def get_article_web_title(self):
+        """
+        Retrieves the web title of the article.
+
+        Returns:
+            str: The web title of the article.
+        """
+        return self.headline.get_article_web_title()
 
     def get_article_web_url(self):
         """
@@ -49,8 +59,10 @@ class NewsRewriter:
         """
         article_text = self.get_article_text()
         role_prompt = "You are a school teacher"
-        rewrite_prompt = "Rewrite the following article in a format suitable for kids " + \
-                         "aged 11-14 to read in 5 minutes: " + article_text
+        rewrite_prompt = "Rewrite the following article in a markdown format suitable for kids " + \
+                         "aged 11-14 to read in 5 minutes and embed the link to the original " + \
+                         "news article (" + self.get_article_web_url() + ") at the end: " \
+                         + article_text
 
         client = OpenAI(
             organization='org-6nwmJPLFhoVcsTHUI4tUAAGE',
@@ -71,10 +83,17 @@ class NewsRewriter:
 
 # create an instance of NewsRewriter
 news_rewriter = NewsRewriter(api_key='1de03f53-a39f-4573-84b6-36a504d6d23a', section='uk-news')
+# todo: get the api key from the environment variable
+# todo: get the section from an ramdomized list of selected sections
+
+# get article web title
+article_web_title = news_rewriter.get_article_web_title()
+print(f"webTitle: {article_web_title}\n\n")
 
 # get article web url
 article_web_url = news_rewriter.get_article_web_url()
 print(f"webUrl: {article_web_url}\n\n")
+# todo: embed the article_web_url in the rewritten article
 
 # get article text
 original_article = news_rewriter.get_article_text()
@@ -83,3 +102,18 @@ print(f"Original article: {original_article}\n\n")
 # rewrite the article for kids
 rewritten_article = news_rewriter.rewrite_article_for_kids()
 print(rewritten_article)
+
+# publish the rewritten article to Medium
+article_data = {
+    "article_name": article_web_title,
+    # todo: ask openai to suggest a title
+    "article_content": rewritten_article,
+    "article_canonical_url": article_web_url,
+    "article_tags": "kids, news, education"
+    # todo: get tags from the article's pillar name & section name, or even ask openai to suggest tags
+}
+
+if publish_to_medium(article_data):
+    print("Article published successfully.")
+else:
+    print("Failed to publish article.")
