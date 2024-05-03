@@ -1,3 +1,5 @@
+""" This module contains the Headline class, which represents a news headline article. """
+
 from theguardian import theguardian_content
 
 class Headline:
@@ -45,3 +47,4 @@ class Headline:
             str: The text summary of the article.
         """
         return self.json_article_content['response']['content']['blocks']['body'][0]['bodyTextSummary']
+    

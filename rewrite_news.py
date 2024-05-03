@@ -1,3 +1,5 @@
+""" This module provides functionality to rewrite news articles in a format suitable for kids """
+
 from openai import OpenAI
 from headline import Headline
 
@@ -73,8 +75,8 @@ article_web_url = news_rewriter.get_article_web_url()
 print(f"webUrl: {article_web_url}\n\n")
 
 # get article text
-article_text = news_rewriter.get_article_text()
-print(f"Article text: {article_text}\n\n")
+original_article = news_rewriter.get_article_text()
+print(f"Original article: {original_article}\n\n")
 
 # rewrite the article for kids
 rewritten_article = news_rewriter.rewrite_article_for_kids()
