@@ -1,8 +1,9 @@
 """ This module provides functionality to rewrite news articles in a format suitable for kids """
 
+import os
 from openai import OpenAI
 from headline import Headline
-from medium import publish_to_medium
+from medium import Medium
 
 class NewsRewriter:
     """
@@ -10,18 +11,18 @@ class NewsRewriter:
     11-14 to read in 5 minutes.
     """
 
-    def __init__(self, api_key, section):
+    def __init__(self, news_api_key, section):
         """
         Initializes the NewsRewriter object.
 
         Args:
-            api_key (str): The API key for the Headline API.
+            news_api_key (str): The API key for the Headline API.
             section (str): The section of the news to retrieve.
 
         Returns:
             None
         """
-        self.headline = Headline(api_key=api_key, section=section)
+        self.headline = Headline(api_key=news_api_key, section=section)
 
     def get_article_web_title(self):
         """
@@ -50,7 +51,7 @@ class NewsRewriter:
         """
         return self.headline.get_article_text()
 
-    def rewrite_article_for_kids(self):
+    def rewrite_article_for_kids(self, openai_api_key):
         """
         Rewrites the article in a format suitable for kids aged 11-14 to read in 5 minutes.
 
@@ -67,7 +68,7 @@ class NewsRewriter:
         client = OpenAI(
             organization='org-6nwmJPLFhoVcsTHUI4tUAAGE',
             project='proj_oa45HVI0HZksNfOpJcaAFH4N',
-            api_key='sk-proj-cpJ2hlLE3YFgAPr0ITFNT3BlbkFJwUPINQZjmJGijJMWrq9O'
+            api_key=openai_api_key
         )
 
         completion = client.chat.completions.create(
@@ -80,9 +81,24 @@ class NewsRewriter:
 
         return completion.choices[0].message.content
 
+# set api keys from environment variables
+news_api_key = os.environ.get('NEWS_API_KEY')
+if news_api_key is None:
+    print("Please set the NEWS_API_KEY environment variable.")
+    exit()
+
+openai_api_key = os.environ.get('OPENAI_API_KEY')
+if openai_api_key is None:
+    print("Please set the OPENAI_API_KEY environment variable.")
+    exit()
+
+medium_api_key = os.environ.get('MEDIUM_API_KEY')
+if medium_api_key is None:
+    print("Please set the MEDIUM_API_KEY environment variable.")
+    exit()
 
 # create an instance of NewsRewriter
-news_rewriter = NewsRewriter(api_key='1de03f53-a39f-4573-84b6-36a504d6d23a', section='uk-news')
+news_rewriter = NewsRewriter(news_api_key=news_api_key, section='uk-news')
 # todo: get the api key from the environment variable
 # todo: get the section from an ramdomized list of selected sections
 
@@ -100,10 +116,12 @@ original_article = news_rewriter.get_article_text()
 print(f"Original article: {original_article}\n\n")
 
 # rewrite the article for kids
-rewritten_article = news_rewriter.rewrite_article_for_kids()
+rewritten_article = news_rewriter.rewrite_article_for_kids(openai_api_key)
 print(rewritten_article)
 
 # publish the rewritten article to Medium
+medium = Medium(api_key=medium_api_key)
+
 article_data = {
     "article_name": article_web_title,
     # todo: ask openai to suggest a title
@@ -113,7 +131,7 @@ article_data = {
     # todo: get tags from the article's pillar name & section name, or even ask openai to suggest tags
 }
 
-if publish_to_medium(article_data):
+if medium.publish_to_medium(article_data):
     print("Article published successfully.")
 else:
     print("Failed to publish article.")
