@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+set -eu
+
+repository_root=$(git rev-parse --show-toplevel)
+stack_name="${1}"
+shift 1
+
+export TERRAGRUNT_WORKING_DIR="${repository_root}/aws/stacks/${stack_name}"
+
+exec terragrunt "$@"
