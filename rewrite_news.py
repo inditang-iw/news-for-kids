@@ -1,10 +1,9 @@
 """ This module provides functionality to rewrite news articles in a format suitable for kids """
 
-import os
+import boto3
 from openai import OpenAI
 from headline import Headline
 from medium import Medium
-import boto3
 
 class NewsRewriter:
     """
@@ -83,25 +82,36 @@ class NewsRewriter:
         return completion.choices[0].message.content
 
 def rewrite_news(news_api_key, openai_api_key, medium_api_key):
+    """
+    Rewrites a news article for kids using the NewsRewriter class and publishes it to Medium.
+
+    Args:
+        news_api_key (str): The API key for accessing the news API.
+        openai_api_key (str): The API key for accessing the OpenAI API.
+        medium_api_key (str): The API key for accessing the Medium API.
+
+    Returns:
+        None
+    """
     # create an instance of NewsRewriter
     news_rewriter = NewsRewriter(news_api_key=news_api_key, section='uk-news')
-    
+
     # get article web title
     article_web_title = news_rewriter.get_article_web_title()
     print(f"webTitle: {article_web_title}\n\n")
-    
+
     # get article web url
     article_web_url = news_rewriter.get_article_web_url()
     print(f"webUrl: {article_web_url}\n\n")
-    
+
     # get article text
     original_article = news_rewriter.get_article_text()
     print(f"Original article: {original_article}\n\n")
-    
+
     # rewrite the article for kids
     rewritten_article = news_rewriter.rewrite_article_for_kids(openai_api_key)
     print(rewritten_article)
-    
+
     # publish the rewritten article to Medium
     medium = Medium(api_key=medium_api_key)
     article_data = {
@@ -110,7 +120,8 @@ def rewrite_news(news_api_key, openai_api_key, medium_api_key):
         "article_content": rewritten_article,
         "article_canonical_url": article_web_url,
         "article_tags": "kids, news, education"
-        # todo: get tags from the article's pillar name & section name, or even ask openai to suggest tags
+        # todo: get tags from the article's pillar name & section name,
+        # or even ask openai to suggest tags
     }
     if medium.publish_to_medium(article_data):
         print("Article published successfully.")
@@ -118,6 +129,12 @@ def rewrite_news(news_api_key, openai_api_key, medium_api_key):
         print("Failed to publish article.")
 
 def retrieve_api_keys():
+    """
+    Retrieves API keys from AWS SSM Parameter Store.
+
+    Returns:
+        dict: A dictionary containing the retrieved API keys.
+    """
     ssm = boto3.client('ssm')
     response = ssm.get_parameters(
         Names=['guardian-api-key', 'openai-api-key', 'medium-api-key'],
@@ -127,32 +144,31 @@ def retrieve_api_keys():
     for parameter in response['Parameters']:
         api_keys[parameter['Name']] = parameter['Value']
     return api_keys
-    
+
+# pylint: disable=unused-argument
 def lambda_handler(event, context):
+    """
+    Handles the Lambda function invocation.
+
+    Args:
+        event (dict): The event data passed to the Lambda function.
+        context (object): The context object passed to the Lambda function.
+
+    Returns:
+        dict: A dictionary containing a message.
+
+    """
     # todo: retreive the api keys from ssm parameter store
     api_keys = retrieve_api_keys()
-    rewrite_news(api_keys['guardian-api-key'], api_keys['openai-api-key'], api_keys['medium-api-key'])
+    rewrite_news(
+        api_keys['guardian-api-key'],
+        api_keys['openai-api-key'],
+        api_keys['medium-api-key']
+        )
     # todo: invoke the rewrite_news function with the api keys
-    return { 
+    return {
         'message' : 'return link to the medium article here?'
     }
 
 # the code below is for local testing
-# set api keys from environment variables
-# news_api_key = os.environ.get('NEWS_API_KEY')
-# if news_api_key is None:
-#     print("Please set the NEWS_API_KEY environment variable.")
-#     exit()
-
-# openai_api_key = os.environ.get('OPENAI_API_KEY')
-# if openai_api_key is None:
-#     print("Please set the OPENAI_API_KEY environment variable.")
-#     exit()
-
-# medium_api_key = os.environ.get('MEDIUM_API_KEY')
-# if medium_api_key is None:
-#     print("Please set the MEDIUM_API_KEY environment variable.")
-#     exit()
-
 lambda_handler(None, None)
-# rewrite_news(news_api_key, openai_api_key, medium_api_key)
