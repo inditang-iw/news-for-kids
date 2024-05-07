@@ -4,6 +4,7 @@ import os
 from openai import OpenAI
 from headline import Headline
 from medium import Medium
+import boto3
 
 class NewsRewriter:
     """
@@ -116,8 +117,21 @@ def rewrite_news(news_api_key, openai_api_key, medium_api_key):
     else:
         print("Failed to publish article.")
 
+def retrieve_api_keys():
+    ssm = boto3.client('ssm')
+    response = ssm.get_parameters(
+        Names=['guardian-api-key', 'openai-api-key', 'medium-api-key'],
+        WithDecryption=True
+    )
+    api_keys = {}
+    for parameter in response['Parameters']:
+        api_keys[parameter['Name']] = parameter['Value']
+    return api_keys
+    
 def lambda_handler(event, context):
     # todo: retreive the api keys from ssm parameter store
+    api_keys = retrieve_api_keys()
+    rewrite_news(api_keys['guardian-api-key'], api_keys['openai-api-key'], api_keys['medium-api-key'])
     # todo: invoke the rewrite_news function with the api keys
     return { 
         'message' : 'return link to the medium article here?'
@@ -125,19 +139,20 @@ def lambda_handler(event, context):
 
 # the code below is for local testing
 # set api keys from environment variables
-news_api_key = os.environ.get('NEWS_API_KEY')
-if news_api_key is None:
-    print("Please set the NEWS_API_KEY environment variable.")
-    exit()
+# news_api_key = os.environ.get('NEWS_API_KEY')
+# if news_api_key is None:
+#     print("Please set the NEWS_API_KEY environment variable.")
+#     exit()
 
-openai_api_key = os.environ.get('OPENAI_API_KEY')
-if openai_api_key is None:
-    print("Please set the OPENAI_API_KEY environment variable.")
-    exit()
+# openai_api_key = os.environ.get('OPENAI_API_KEY')
+# if openai_api_key is None:
+#     print("Please set the OPENAI_API_KEY environment variable.")
+#     exit()
 
-medium_api_key = os.environ.get('MEDIUM_API_KEY')
-if medium_api_key is None:
-    print("Please set the MEDIUM_API_KEY environment variable.")
-    exit()
+# medium_api_key = os.environ.get('MEDIUM_API_KEY')
+# if medium_api_key is None:
+#     print("Please set the MEDIUM_API_KEY environment variable.")
+#     exit()
 
-rewrite_news(news_api_key, openai_api_key, medium_api_key)
+lambda_handler(None, None)
+# rewrite_news(news_api_key, openai_api_key, medium_api_key)
