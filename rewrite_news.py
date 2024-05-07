@@ -81,6 +81,45 @@ class NewsRewriter:
 
         return completion.choices[0].message.content
 
+# todo: refactor below as a function to receive 3 api keys as arguments
+def rewrite_news(news_api_key, openai_api_key, medium_api_key):
+    # create an instance of NewsRewriter
+    news_rewriter = NewsRewriter(news_api_key=news_api_key, section='uk-news')
+    
+    # get article web title
+    article_web_title = news_rewriter.get_article_web_title()
+    print(f"webTitle: {article_web_title}\n\n")
+    
+    # get article web url
+    article_web_url = news_rewriter.get_article_web_url()
+    print(f"webUrl: {article_web_url}\n\n")
+    
+    # get article text
+    original_article = news_rewriter.get_article_text()
+    print(f"Original article: {original_article}\n\n")
+    
+    # rewrite the article for kids
+    rewritten_article = news_rewriter.rewrite_article_for_kids(openai_api_key)
+    print(rewritten_article)
+    
+    # publish the rewritten article to Medium
+    medium = Medium(api_key=medium_api_key)
+    article_data = {
+        "article_name": article_web_title,
+        # todo: ask openai to suggest a title
+        "article_content": rewritten_article,
+        "article_canonical_url": article_web_url,
+        "article_tags": "kids, news, education"
+        # todo: get tags from the article's pillar name & section name, or even ask openai to suggest tags
+    }
+    if medium.publish_to_medium(article_data):
+        print("Article published successfully.")
+    else:
+        print("Failed to publish article.")
+
+# todo: create a lambda handler function
+# todo: retreive the api keys from ssm parameter store
+
 # set api keys from environment variables
 news_api_key = os.environ.get('NEWS_API_KEY')
 if news_api_key is None:
@@ -97,41 +136,4 @@ if medium_api_key is None:
     print("Please set the MEDIUM_API_KEY environment variable.")
     exit()
 
-# create an instance of NewsRewriter
-news_rewriter = NewsRewriter(news_api_key=news_api_key, section='uk-news')
-# todo: get the api key from the environment variable
-# todo: get the section from an ramdomized list of selected sections
-
-# get article web title
-article_web_title = news_rewriter.get_article_web_title()
-print(f"webTitle: {article_web_title}\n\n")
-
-# get article web url
-article_web_url = news_rewriter.get_article_web_url()
-print(f"webUrl: {article_web_url}\n\n")
-# todo: embed the article_web_url in the rewritten article
-
-# get article text
-original_article = news_rewriter.get_article_text()
-print(f"Original article: {original_article}\n\n")
-
-# rewrite the article for kids
-rewritten_article = news_rewriter.rewrite_article_for_kids(openai_api_key)
-print(rewritten_article)
-
-# publish the rewritten article to Medium
-medium = Medium(api_key=medium_api_key)
-
-article_data = {
-    "article_name": article_web_title,
-    # todo: ask openai to suggest a title
-    "article_content": rewritten_article,
-    "article_canonical_url": article_web_url,
-    "article_tags": "kids, news, education"
-    # todo: get tags from the article's pillar name & section name, or even ask openai to suggest tags
-}
-
-if medium.publish_to_medium(article_data):
-    print("Article published successfully.")
-else:
-    print("Failed to publish article.")
+rewrite_news(news_api_key, openai_api_key, medium_api_key)
