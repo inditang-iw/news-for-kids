@@ -22,3 +22,4 @@ make run
 1. Store API keys in AWS Systems Manager Parameter Store (not Secrets Manager as it is not free)
 2. Scheduled runs using AWS Lambda & CloudWatch events
 3. CI/CD pipeline and tests
+4. Add a C4 Model in Readme

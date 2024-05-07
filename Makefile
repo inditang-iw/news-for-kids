@@ -4,4 +4,4 @@ lint:
 	@pylint *.py
 
 run:
-	@python3 rewrite_news.py
+	@python3 src/rewrite_news.py
