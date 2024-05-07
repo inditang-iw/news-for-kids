@@ -4,5 +4,4 @@ lint:
 	@pylint *.py
 
 run:
-	. ./env-setup.sh && \
-	python3 rewrite_news.py
+	@python3 src/rewrite_news.py
