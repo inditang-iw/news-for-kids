@@ -81,7 +81,6 @@ class NewsRewriter:
 
         return completion.choices[0].message.content
 
-# todo: refactor below as a function to receive 3 api keys as arguments
 def rewrite_news(news_api_key, openai_api_key, medium_api_key):
     # create an instance of NewsRewriter
     news_rewriter = NewsRewriter(news_api_key=news_api_key, section='uk-news')
@@ -117,9 +116,14 @@ def rewrite_news(news_api_key, openai_api_key, medium_api_key):
     else:
         print("Failed to publish article.")
 
-# todo: create a lambda handler function
-# todo: retreive the api keys from ssm parameter store
+def lambda_handler(event, context):
+    # todo: retreive the api keys from ssm parameter store
+    # todo: invoke the rewrite_news function with the api keys
+    return { 
+        'message' : 'return link to the medium article here?'
+    }
 
+# the code below is for local testing
 # set api keys from environment variables
 news_api_key = os.environ.get('NEWS_API_KEY')
 if news_api_key is None:
