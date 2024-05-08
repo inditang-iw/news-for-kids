@@ -76,7 +76,8 @@ class NewsRewriter:
             messages=[
                 {"role": "system", "content": role_prompt},
                 {"role": "user", "content": rewrite_prompt},
-            ]
+            ],
+            timeout=50,
         )
 
         return completion.choices[0].message.content
