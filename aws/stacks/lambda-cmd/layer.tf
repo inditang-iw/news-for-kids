@@ -8,10 +8,6 @@ locals {
   requirements_path = "${path.cwd}/${local.requirements_name}"
 }
 
-output "requirements_path" {
-    value = local.requirements_path
-}
-
 # create zip file from requirements.txt. Triggers only when the file is updated
 # you don't need the requirements.txt from the project as many of the packages 
 # are present in lambda runtime, so only put those packages not in lambda runtime
@@ -38,6 +34,6 @@ resource "aws_lambda_layer_version" "lambda_layer" {
   filename            = "${local.layer_path}/${local.layer_zip_name}"
   layer_name          = local.layer_name
   compatible_runtimes = ["python3.9"]
+  compatible_architectures = ["x86_64"]
   source_code_hash    = filebase64sha256("${local.layer_path}/${local.layer_zip_name}")
-  # source_code_hash    = filesha1("${local.layer_path}/${local.layer_zip_name}")
 }
