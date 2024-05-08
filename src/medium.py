@@ -32,7 +32,7 @@ class Medium:
         """
         self.api_key = api_key
 
-        user_info = requests.get(f"https://api.medium.com/v1/me?accessToken={api_key}")
+        user_info = requests.get(f"https://api.medium.com/v1/me?accessToken={api_key}", timeout=5)
         user_json_info = user_info.json()
         print(f"user_json_info: {user_json_info}\n\n")
 
@@ -65,21 +65,21 @@ class Medium:
             "content": data["article_content"],
             "canonicalUrl": data["article_canonical_url"],
             "tags": data["article_tags"].split(", "),
-            "publishStatus": "draft"
+            "publishStatus": "public"
         }
 
         post_url = f"https://api.medium.com/v1/users/{self.medium_id}/posts"
         print(f"post_url: {post_url}\n\n")
 
-        post_request = requests.post(url=post_url, headers=header, json=article)
+        post_request = requests.post(url=post_url, headers=header, json=article, timeout=5)
         print(f"post_request: {post_request}\n\n")
 
         post_response_json_info = post_request.json()
         if post_request.status_code == requests.codes.created:
             return True
-        else:
-            print(f"post_response_json_info: {post_response_json_info}\n\n")
-            return False
+        
+        print(f"post_response_json_info: {post_response_json_info}\n\n")
+        return False
 
 # Example usage
 # medium_api_key = os.environ.get('MEDIUM_API_KEY')

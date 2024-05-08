@@ -26,9 +26,10 @@ resource "aws_lambda_function" "news_for_kids" {
     role = aws_iam_role.lambda_role.arn
     handler = "rewrite_news.lambda_handler"
     runtime = "python3.9"
-    timeout = "30"
+    timeout = "80"
     architectures = ["x86_64"]
     layers = [aws_lambda_layer_version.lambda_layer.arn]
+    source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 }
 
 data "aws_iam_policy_document" "instance_assume_role_policy" {

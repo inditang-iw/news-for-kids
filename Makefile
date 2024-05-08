@@ -1,7 +1,7 @@
 .PHONY: lint
 
 lint:
-	@pylint *.py
+	@pylint src/*.py
 
 run:
 	@python3 src/rewrite_news.py
