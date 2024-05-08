@@ -79,7 +79,7 @@ resource "aws_iam_role" "lambda_role" {
 
 resource "aws_cloudwatch_event_rule" "cron_schedule" {
     name = "cron-schedule"
-    description = "Fires every 00:00, 08:00, 16:00"
+    description = "Fires every 00:00, 08:00, 16:00 UTC"
     schedule_expression = "cron(0 8,16 * * ? *)"
 }
 
