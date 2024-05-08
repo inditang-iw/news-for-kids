@@ -1,3 +1,8 @@
+locals {
+  source_path = "../../../src"
+  output_path = "${path.module}/.output/lambda.zip"
+}
+
 output "message" {
     value = "inside lambda-cmd.tf"
 }
@@ -11,17 +16,19 @@ data "aws_region" "current" {}
 
 data "archive_file" "lambda_zip" {
     type        = "zip"
-    source_dir  = "../../../src"
-    output_path = "../../../.output/lambda.zip"
+    source_dir  = local.source_path
+    output_path = local.output_path
 }
 
 resource "aws_lambda_function" "news_for_kids" {
-    filename = "../../../.output/lambda.zip"
+    filename = local.output_path
     function_name = "news-for-kids"
     role = aws_iam_role.lambda_role.arn
     handler = "rewrite_news.lambda_handler"
     runtime = "python3.9"
     timeout = "30"
+    architectures = ["x86_64"]
+    layers = [aws_lambda_layer_version.lambda_layer.arn]
 }
 
 data "aws_iam_policy_document" "instance_assume_role_policy" {
