@@ -26,7 +26,7 @@ resource "aws_lambda_function" "news_for_kids" {
     role = aws_iam_role.lambda_role.arn
     handler = "rewrite_news.lambda_handler"
     runtime = "python3.9"
-    timeout = "30"
+    timeout = "80"
     architectures = ["x86_64"]
     layers = [aws_lambda_layer_version.lambda_layer.arn]
 }
