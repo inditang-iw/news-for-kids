@@ -1,13 +1,38 @@
 # news-for-kids
-A Gen AI based application to rewrite headline news into a format suitable for kids to read
+A Gen AI based application to rewrite headline news into a format suitable for kids to read.
+
+![System Context Diagram](docs/images/system-context-diagram.png)
 
 ## Prerequisites
-Before running the script rewrite_news.py, API keys for The Guardian, OpenAI and Medium need to be set in these environment variables:
-- NEWS_API_KEY
-- OPENAI_API_KEY
-- MEDIUM_API_KEY
+API keys for The Guardian, OpenAI and Medium are needed for the application to work. Obtain these API keys and put them in AWS SSM Parameter Store with the names below:
+- guardian-api-key
+- openai-api-key
+- medium-api-key
 
-Alternatively, you may create a shell script env-setup.sh to set the environment variables above and then use the following command to run the script:
+The first step is to create the necessary infrastructure. Before creating the infrastructure using the Terraform scripts in the [aws](aws) folder, you will need to first login to the AWS account which has the necessary access. Assuming an AWS profile with the name "news-dev" has been set up on your local machine, use the following command to login as the profile:
+
+```
+export AWS_PROFILE=news-dev; aws sso login
+```
+
+Then depending on whether you would like to run the application only manually from your local machine, or to deploy it as an AWS lambda function and schedule it to run periodically, run the Terraform scripts with the commands below.
+
+To create all the infrastructure and run the application as an AWS lambda function, run the following command:
+
+```
+./tg . run-all apply
+```
+
+To create only the SSM Parameter Store and run the application only locally, run the following command:
+
+```
+./tg ssm-param-store run-all apply
+```
+
+In any case, you will then need to update the values of the API keys manually either through AWS console or CLI.
+
+Assuming you are still using the shell with the AWS account logged in (i.e. the application will have access to the API keys stored in SSM Parameter Store), the next step to run the application manually is to run the following command:
+
 ```
 make run
 ```
