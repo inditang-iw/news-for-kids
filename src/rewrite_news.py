@@ -1,6 +1,7 @@
 """ This module provides functionality to rewrite news articles in a format suitable for kids """
 
 import boto3
+import random
 from openai import OpenAI
 from headline import Headline
 from medium import Medium
@@ -94,8 +95,12 @@ def rewrite_news(news_api_key, openai_api_key, medium_api_key):
     Returns:
         None
     """
+    # randomly choose a section
+    sections = ['uk-news', 'sport', 'music', 'world', 'football', 'food', 'books', 'lifeandstyle', 'environment', 'technology', 'tv-and-radio']
+    section = random.choice(sections)
+
     # create an instance of NewsRewriter
-    news_rewriter = NewsRewriter(news_api_key=news_api_key, section='uk-news')
+    news_rewriter = NewsRewriter(news_api_key=news_api_key, section=section)
 
     # get article web title
     article_web_title = news_rewriter.get_article_web_title()
