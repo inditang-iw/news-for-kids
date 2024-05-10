@@ -1,13 +1,20 @@
 # news-for-kids
-A Gen AI based application to rewrite headline news into a format suitable for kids to read.
+A Gen AI based application to rewrite headline news into a format suitable for kids to read. The rewritten news articles can be found here: https://medium.com/@inditang
 
-![System Context Diagram](docs/images/system-context-diagram.png)
+# Disclaimers
+This software project is for personal learning purpose to get a taste of Python programming and OpenAI API. It was done in limited time and definitely has much room for improvements. Some of the potential future improvements/enhancements can be found in the section [Ideas on other features](#ideas-on-other-features)
 
-## Prerequisites
+# C4 Diagrams
+
+## System Context Diagram ![System Context Diagram](docs/images/system-context-diagram.png)
+
+## Container Diagram ![Container Diagram](docs/images/container-diagram.png)
+
+# Prerequisites
 API keys for The Guardian, OpenAI and Medium are needed for the application to work. Obtain these API keys and put them in AWS SSM Parameter Store with the names below:
-- guardian-api-key
-- openai-api-key
-- medium-api-key
+- /news-for-kids/guardian-api-key
+- /news-for-kids/openai-api-key
+- /news-for-kids/medium-api-key
 
 The first step is to create the necessary infrastructure. Before creating the infrastructure using the Terraform scripts in the [aws](aws) folder, you will need to first login to the AWS account which has the necessary access. Assuming an AWS profile with the name "news-dev" has been set up on your local machine, use the following command to login as the profile:
 
@@ -37,14 +44,14 @@ Assuming you are still using the shell with the AWS account logged in (i.e. the 
 make run
 ```
 
-## References
+# References
 - The Guardian's API Key - https://open-platform.theguardian.com/
 - theguardian-api-python - https://github.com/prabhath6/theguardian-api-python
 - OpenAI API Key - https://platform.openai.com/docs/api-reference/chat
 - Medium API Reference - https://github.com/Medium/medium-api-docs?tab=readme-ov-file#33-posts
 
-## Ideas on other features
-1. CI/CD pipeline and tests
-2. Add a C4 Model in Readme
+# Ideas on other features
+1. Exception handling
+2. Add tests
 3. Move theguardian package to venv & lambda layer
-4. Exception handling
+4. CI/CD pipeline 
