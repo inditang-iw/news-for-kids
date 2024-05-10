@@ -3,6 +3,7 @@ locals {
   environment       = "dev"
   layer_path        = ".output"
   layer_zip_name    = "layer.zip"
+  layer_zip_path    = "${local.layer_path}/${local.layer_zip_name}"
   layer_name        = "lambda_layer_${local.environment}"
   requirements_name = "requirements.txt"
   requirements_path = "${path.cwd}/${local.requirements_name}"
@@ -35,5 +36,11 @@ resource "aws_lambda_layer_version" "lambda_layer" {
   layer_name          = local.layer_name
   compatible_runtimes = ["python3.9"]
   compatible_architectures = ["x86_64"]
-  source_code_hash    = filebase64sha256("${local.layer_path}/${local.layer_zip_name}")
+  source_code_hash    = fileexists(local.layer_zip_path) ? filebase64sha256(local.layer_zip_path) : base64sha256(random_string.random.result)
+
+  depends_on = [null_resource.lambda_layer]
+}
+
+resource "random_string" "random" {
+  length           = 16
 }

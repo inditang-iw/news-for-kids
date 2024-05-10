@@ -3,5 +3,11 @@ include "root" {
 }
 
 inputs = {
-  parameter_names = ["guardian-api-key", "openai-api-key", "medium-api-key"]
+  parameter_names = [
+    "/news-for-kids/guardian-api-key", 
+    "/news-for-kids/openai-api-key", 
+    "/news-for-kids/medium-api-key",
+    "/news-for-kids/openai-organization",
+    "/news-for-kids/openai-project"
+    ]
 }
